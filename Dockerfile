@@ -46,12 +46,12 @@ RUN chmod -R 777 /slic3r/get_latest_prusaslicer_release.sh
 
 # Retrieve and unzip all of the OrcaSlicer bits using variable.
 RUN latestOrcaslicer=$(/slic3r/get_latest_prusaslicer_release.sh url) \
-&& echo ${latestOrcaslicer} \
-&& orcaslicerReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
-&& curl -sSL ${latestOrcaslicer} > /slic3r/slic3r-dist/slic3r.AppImage \
-&& chmod -R 775 /slic3r/slic3r-dist/slic3r.AppImage \
-&& dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=slic3r-dist/slic3r.AppImage \
-&& bash -c "/slic3r/slic3r-dist/slic3r.AppImage --appimage-extract"
+		&& echo ${latestOrcaslicer} \
+		&& orcaslicerReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
+		&& curl -sSL ${latestOrcaslicer} > /slic3r/slic3r-dist/slic3r.AppImage \
+		&& chmod -R 775 /slic3r/slic3r-dist/slic3r.AppImage \
+		&& dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=slic3r-dist/slic3r.AppImage \
+		&& bash -c "/slic3r/slic3r-dist/slic3r.AppImage --appimage-extract"
 
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get autoclean
