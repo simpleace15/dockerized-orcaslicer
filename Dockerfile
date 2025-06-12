@@ -51,6 +51,14 @@ RUN chmod +x /slic3r/get_latest_prusaslicer_release.sh \
   && /slic3r/${slic3rReleaseName} --appimage-extract \
   && rm -f /slic3r/${slic3rReleaseName}
 
+RUN latestOrcaslicer=$(/slic3r/get_latest_prusaslicer_release.sh url) \
+&& echo ${latestOrcaslicer} \
+&& orcaslicerReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
+&& curl -sSL ${latestOrcaslicer} > /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
+&& chmod -R 775 /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
+&& dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=orcaslicer-dist/orcaslicer.AppImage \
+&& bash -c "/orcaslicer/orcaslicer-dist/orcaslicer.AppImage --appimage-extract"
+
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get autoclean
 RUN chmod -R 777 /slic3r/
