@@ -42,15 +42,6 @@ WORKDIR /slic3r
 ADD get_latest_prusaslicer_release.sh /slic3r
 
 # Retrieve and unzip all of the OrcaSlicer bits using variable.
-RUN chmod +x /slic3r/get_latest_prusaslicer_release.sh \
-  && latestSlic3r=$(/slic3r/get_latest_prusaslicer_release.sh url) \
-  && slic3rReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
-  && curl -sSL ${latestSlic3r} > ${slic3rReleaseName} \
-  && rm -f /slic3r/releaseInfo.json \
-  && chmod +x /slic3r/${slic3rReleaseName} \
-  && /slic3r/${slic3rReleaseName} --appimage-extract \
-  && rm -f /slic3r/${slic3rReleaseName}
-
 RUN latestOrcaslicer=$(/slic3r/get_latest_prusaslicer_release.sh url) \
 && echo ${latestOrcaslicer} \
 && orcaslicerReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
