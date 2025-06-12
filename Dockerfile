@@ -41,7 +41,7 @@ RUN wget -qO /tmp/virtualgl_${VIRTUALGL_VERSION}_amd64.deb https://packagecloud.
 WORKDIR /slic3r
 ADD get_latest_prusaslicer_release.sh /slic3r
 
-RUN mkdir -p /slic3r/orcaslicer-dist
+RUN mkdir -p /slic3r/slic3r-dist
 RUN chmod -R 777 /slic3r/get_latest_prusaslicer_release.sh
 
 # Retrieve and unzip all of the OrcaSlicer bits using variable.
