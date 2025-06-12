@@ -41,17 +41,17 @@ RUN wget -qO /tmp/virtualgl_${VIRTUALGL_VERSION}_amd64.deb https://packagecloud.
 WORKDIR /slic3r
 ADD get_latest_prusaslicer_release.sh /slic3r
 
-RUN mkdir -p /orcaslicer/orcaslicer-dist
-RUN chmod -R 777 /orcaslicer/get_latest_prusaslicer_release.sh
+RUN mkdir -p /slic3r/orcaslicer-dist
+RUN chmod -R 777 /slic3r/get_latest_prusaslicer_release.sh
 
 # Retrieve and unzip all of the OrcaSlicer bits using variable.
 RUN latestOrcaslicer=$(/slic3r/get_latest_prusaslicer_release.sh url) \
 && echo ${latestOrcaslicer} \
 && orcaslicerReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
-&& curl -sSL ${latestOrcaslicer} > /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
-&& chmod -R 775 /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
-&& dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=orcaslicer-dist/orcaslicer.AppImage \
-&& bash -c "/orcaslicer/orcaslicer-dist/orcaslicer.AppImage --appimage-extract"
+&& curl -sSL ${latestOrcaslicer} > /slic3r/slic3r-dist/slic3r.AppImage \
+&& chmod -R 775 /slic3r/slic3r-dist/slic3r.AppImage \
+&& dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=slic3r-dist/slic3r.AppImage \
+&& bash -c "/slic3r/slic3r-dist/slic3r.AppImage --appimage-extract"
 
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get autoclean
