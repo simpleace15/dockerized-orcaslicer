@@ -42,7 +42,7 @@ WORKDIR /slic3r
 ADD get_latest_prusaslicer_release.sh /slic3r
 
 RUN mkdir -p /orcaslicer/orcaslicer-dist
-RUN chmod +x /orcaslicer/get_latest_prusaslicer_release.sh
+RUN chmod -R 777 /orcaslicer/get_latest_prusaslicer_release.sh
 
 # Retrieve and unzip all of the OrcaSlicer bits using variable.
 RUN latestOrcaslicer=$(/slic3r/get_latest_prusaslicer_release.sh url) \
