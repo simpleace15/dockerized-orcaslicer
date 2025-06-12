@@ -45,10 +45,10 @@ RUN mkdir -p /slic3r/orcaslicer-dist
 RUN chmod -R 777 /slic3r/get_latest_prusaslicer_release.sh
 
 # Retrieve and unzip all of the OrcaSlicer bits using variable.
-RUN latestOrcaslicer=$(/slic3r/get_latest_prusaslicer_release.sh url) \
-    && echo ${latestOrcaslicer} \
-    && orcaslicerReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
-    && curl -sSL ${latestOrcaslicer} > /slic3r/slic3r-dist/slic3r.AppImage \
+RUN latestSlic3r=$(/slic3r/get_latest_prusaslicer_release.sh url) \
+    && echo ${latestSlic3r} \
+    && slic3rReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
+    && curl -sSL ${latestSlic3r} > /slic3r/slic3r-dist/slic3r.AppImage \
     && chmod -R 775 /slic3r/slic3r-dist/slic3r.AppImage \
     && dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=slic3r-dist/slic3r.AppImage \
     && bash -c "/slic3r/slic3r-dist/slic3r.AppImage --appimage-extract"
