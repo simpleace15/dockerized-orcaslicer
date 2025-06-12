@@ -7,6 +7,8 @@ LABEL authors="vajonam, Michael Helfrich - helfrichmichael"
 ARG VIRTUALGL_VERSION=3.1.1-20240228
 ARG TURBOVNC_VERSION=3.1.1-20240127
 ENV DEBIAN_FRONTEND noninteractive
+ARG PUID=1000
+ARG PGID=1000
 
 # Install some basic dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -48,8 +50,8 @@ RUN chmod +x /slic3r/get_latest_prusaslicer_release.sh \
   && rm -f /slic3r/${slic3rReleaseName} \
   && rm -rf /var/lib/apt/lists/* \
   && apt-get autoclean \
-  && groupadd slic3r \
-  && useradd -g slic3r --create-home --home-dir /home/slic3r slic3r \
+  && groupadd -g ${PGID} slic3r \
+  && useradd -u ${PUID} -g slic3r --create-home --home-dir /home/slic3r slic3r \
   && mkdir -p /slic3r \
   && mkdir -p /configs \
   && mkdir -p /prints/ \
@@ -87,6 +89,7 @@ ADD icons/prusaslicer-120x120.png /usr/share/novnc/app/images/icons/novnc-120x12
 ADD icons/prusaslicer-144x144.png /usr/share/novnc/app/images/icons/novnc-144x144.png
 ADD icons/prusaslicer-152x152.png /usr/share/novnc/app/images/icons/novnc-152x152.png
 ADD icons/prusaslicer-192x192.png /usr/share/novnc/app/images/icons/novnc-192x192.png
+ADD lxde-rc.xml /home/slic3r/.config/openbox/lxde-rc.xml 
 
 # Set Firefox to run with hardware acceleration as if enabled.
 RUN sed -i 's|exec $MOZ_LIBDIR/$MOZ_APP_NAME "$@"|if [ -n "$ENABLEHWGPU" ] \&\& [ "$ENABLEHWGPU" = "true" ]; then\n  exec /usr/bin/vglrun $MOZ_LIBDIR/$MOZ_APP_NAME "$@"\nelse\n  exec $MOZ_LIBDIR/$MOZ_APP_NAME "$@"\nfi|g' /usr/bin/firefox-esr
