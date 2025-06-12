@@ -40,6 +40,8 @@ RUN wget -qO /tmp/virtualgl_${VIRTUALGL_VERSION}_amd64.deb https://packagecloud.
 # Install Prusaslicer.
 WORKDIR /slic3r
 ADD get_latest_prusaslicer_release.sh /slic3r
+
+# Retrieve and unzip all of the OrcaSlicer bits using variable.
 RUN chmod +x /slic3r/get_latest_prusaslicer_release.sh \
   && latestSlic3r=$(/slic3r/get_latest_prusaslicer_release.sh url) \
   && slic3rReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
@@ -47,22 +49,28 @@ RUN chmod +x /slic3r/get_latest_prusaslicer_release.sh \
   && rm -f /slic3r/releaseInfo.json \
   && chmod +x /slic3r/${slic3rReleaseName} \
   && /slic3r/${slic3rReleaseName} --appimage-extract \
-  && rm -f /slic3r/${slic3rReleaseName} \
-  && rm -rf /var/lib/apt/lists/* \
-  && apt-get autoclean \
-  && groupadd -g ${PGID} slic3r \
-  && useradd -u ${PUID} -g slic3r --create-home --home-dir /home/slic3r slic3r \
-  && mkdir -p /slic3r \
-  && mkdir -p /configs \
-  && mkdir -p /prints/ \
-  && chown -R slic3r:slic3r /slic3r/ /home/slic3r/ /prints/ /configs/ \
-  && locale-gen en_US \
-  && mkdir /configs/.local \
-  && mkdir -p /configs/.config/ \
-  && ln -s /configs/.config/ /home/slic3r/ \
-  && mkdir -p /home/slic3r/.config/ \
-  && echo "XDG_DOWNLOAD_DIR=\"/prints/\"" >> /home/slic3r/.config/user-dirs.dirs \
-  && echo "file:///prints prints" >> /home/slic3r/.gtk-bookmarks
+  && rm -f /slic3r/${slic3rReleaseName}
+
+RUN rm -rf /var/lib/apt/lists/*
+RUN apt-get autoclean
+RUN chmod -R 777 /slic3r/
+RUN groupadd -g ${PGID} slic3r
+RUN useradd -u ${PUID} -g slic3r --create-home --home-dir /home/slic3r slic3r
+RUN mkdir -p /slic3r/
+RUN mkdir -p /configs/
+RUN mkdir -p /prints/
+RUN chown -R slic3r:slic3r /slic3r/ /home/slic3r/ /prints/ /configs/
+RUN locale-gen en_US
+RUN mkdir /configs/.local
+RUN mkdir -p /configs/.config/
+RUN ln -s /configs/.config/ /home/slic3r/
+RUN mkdir -p /home/slic3r/.config/
+RUN mkdir -p /home/slic3r/.config/PrusaSlicer/
+
+# We can now set the Download directory for Firefox and other browsers. 
+# We can also add /prints/ to the file explorer bookmarks for easy access.
+RUN echo "XDG_DOWNLOAD_DIR=\"/prints/\"" >> /home/slic3r/.config/user-dirs.dirs
+RUN echo "file:///prints prints" >> /home/slic3r/.gtk-bookmarks
 
 # Generate key for noVNC and cleanup errors.
 RUN openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/novnc.pem -out /etc/novnc.pem -days 365 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost" \
