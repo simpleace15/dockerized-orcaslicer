@@ -50,7 +50,7 @@ RUN latestOrcaslicer=$(/orcaslicer/get_latest_orcaslicer_release.sh url) \
     && OrcaslicerReleaseName=$(/orcaslicer/get_latest_orcaslicer_release.sh name) \
     && curl -sSL ${latestOrcaslicer} > /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
     && chmod -R 775 /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
-    && dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=slic3r-dist/slic3r.AppImage \
+    && dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=orcaslicer-dist/orcaslicer.AppImage \
     && bash -c "/orcaslicer/orcaslicer-dist/orcaslicer.AppImage --appimage-extract"
 
 RUN rm -rf /var/lib/apt/lists/*
