@@ -7,7 +7,6 @@ name=$(jq -r '.assets[] | select(.browser_download_url|test(".*\\.AppImage"))| .
 version=$(jq -r .tag_name $TMPDIR/latest.json)
 
 if [[ "$name" == *Ubuntu* ]]; then
-  echo "Downloading $name from $url..."
   curl -fSsL $url > /dev/null
 
   echo "Done! The Ubuntu AppImage file has been downloaded to the current directory."
