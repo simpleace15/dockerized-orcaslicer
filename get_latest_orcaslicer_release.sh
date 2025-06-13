@@ -1,37 +1,16 @@
 #!/bin/bash
 
 TMPDIR="$(mktemp -d)"
-
 curl -SsL https://api.github.com/repos/SoftFever/OrcaSlicer/releases/latest > $TMPDIR/latest.json
-
-url=$(jq -r '.assets[] | select(.browser_download_url|test("_Linux_Ubuntu.*.AppImage$"))| .browser_download_url' $TMPDIR/latest.json)
-name=$(jq -r '.assets[] | select(.browser_download_url|test("_Linux_Ubuntu.*.AppImage$"))| .name' $TMPDIR/latest.json)
+url=$(jq -r '.assets[] | select(.browser_download_url|test(".*\\.AppImage"))| .browser_download_url' $TMPDIR/latest.json)
+name=$(jq -r '.assets[] | select(.browser_download_url|test(".*\\.AppImage"))| .name' $TMPDIR/latest.json)
 version=$(jq -r .tag_name $TMPDIR/latest.json)
 
-if [ $# -ne 1 ]; then
-  echo "Wrong number of params"
-  exit 1
+if [[ "$name" == *Ubuntu* ]]; then
+  echo "Downloading $name from $url..."
+  curl -fSsL $url > /dev/null
+
+  echo "Done! The Ubuntu AppImage file has been downloaded to the current directory."
 else
-  request=$1
+  echo "No Ubuntu AppImage found in the latest release. Exiting..."
 fi
-
-case $request in
-
-  url)
-    echo $url
-    ;;
-
-  name)
-    echo $name
-    ;;
-
-  version)
-    echo $version
-    ;;
-
-  *)
-    echo "Unknown request"
-    ;;
-esac
-
-exit 0
