@@ -2,7 +2,7 @@
 ARG UBUNTU_VERSION=22.04
 
 FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu${UBUNTU_VERSION}
-LABEL authors="vajonam, Michael Helfrich - helfrichmichael"
+LABEL authors=" - SimpleAce"
 
 ARG VIRTUALGL_VERSION=3.1.1-20240228
 ARG TURBOVNC_VERSION=3.1.1-20240127
@@ -38,41 +38,41 @@ RUN wget -qO /tmp/virtualgl_${VIRTUALGL_VERSION}_amd64.deb https://packagecloud.
     && rm -rf /tmp/*.deb
 
 # Install Prusaslicer.
-WORKDIR /slic3r
-ADD get_latest_prusaslicer_release.sh /slic3r
+WORKDIR /orcaslicer
+ADD get_latest_orcaslicer_release.sh /orcaslicer
 
-RUN mkdir -p /slic3r/slic3r-dist
-RUN chmod -R 777 /slic3r/get_latest_prusaslicer_release.sh
+RUN mkdir -p /orcaslicer/orcaslicer-dist
+RUN chmod -R 777 /orcaslicer/get_latest_orcaslicer_release.sh
 
 # Retrieve and unzip all of the OrcaSlicer bits using variable.
-RUN latestSlic3r=$(/slic3r/get_latest_prusaslicer_release.sh url) \
-    && echo ${latestSlic3r} \
-    && slic3rReleaseName=$(/slic3r/get_latest_prusaslicer_release.sh name) \
-    && curl -sSL ${latestSlic3r} > /slic3r/slic3r-dist/slic3r.AppImage \
-    && chmod -R 775 /slic3r/slic3r-dist/slic3r.AppImage \
+RUN latestOrcaslicer=$(/orcaslicer/get_latest_orcaslicer_release.sh url) \
+    && echo ${latestOrcaslicer} \
+    && OrcaslicerReleaseName=$(/orcaslicer/get_latest_orcaslicer_release.sh name) \
+    && curl -sSL ${latestOrcaslicer} > /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
+    && chmod -R 775 /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
     && dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=slic3r-dist/slic3r.AppImage \
-    && bash -c "/slic3r/slic3r-dist/slic3r.AppImage --appimage-extract"
+    && bash -c "/orcaslicer/orcaslicer-dist/orcaslicer.AppImage --appimage-extract"
 
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get autoclean
-RUN chmod -R 777 /slic3r/
-RUN groupadd -g ${PGID} slic3r
-RUN useradd -u ${PUID} -g slic3r --create-home --home-dir /home/slic3r slic3r
-RUN mkdir -p /slic3r/
+RUN chmod -R 777 /orcaslicer/
+RUN groupadd -g ${PGID} orcaslicer
+RUN useradd -u ${PUID} -g orcaslicer --create-home --home-dir /home/orcaslicer orcaslicer
+RUN mkdir -p /orcaslicer/
 RUN mkdir -p /configs/
 RUN mkdir -p /prints/
-RUN chown -R slic3r:slic3r /slic3r/ /home/slic3r/ /prints/ /configs/
+RUN chown -R orcaslicer:orcaslicer /orcaslicer/ /home/orcaslicer/ /prints/ /configs/
 RUN locale-gen en_US
 RUN mkdir /configs/.local
 RUN mkdir -p /configs/.config/
-RUN ln -s /configs/.config/ /home/slic3r/
-RUN mkdir -p /home/slic3r/.config/
-RUN mkdir -p /home/slic3r/.config/PrusaSlicer/
+RUN ln -s /configs/.config/ /home/orcaslicer/
+RUN mkdir -p /home/orcaslicer/.config/
+RUN mkdir -p /home/orcaslicer/.config/OrcaSlicer/
 
 # We can now set the Download directory for Firefox and other browsers. 
 # We can also add /prints/ to the file explorer bookmarks for easy access.
-RUN echo "XDG_DOWNLOAD_DIR=\"/prints/\"" >> /home/slic3r/.config/user-dirs.dirs
-RUN echo "file:///prints prints" >> /home/slic3r/.gtk-bookmarks
+RUN echo "XDG_DOWNLOAD_DIR=\"/prints/\"" >> /home/orcaslicer/.config/user-dirs.dirs
+RUN echo "file:///prints prints" >> /home/orcaslicer/.gtk-bookmarks
 
 # Generate key for noVNC and cleanup errors.
 RUN openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/novnc.pem -out /etc/novnc.pem -days 365 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost" \
