@@ -26,4 +26,4 @@ export SUPD_LOGLEVEL="${SUPD_LOGLEVEL:-TRACE}"
 export VGL_DISPLAY="${VGL_DISPLAY:-egl}"
 
 # fix perms and launch supervisor with the above environment variables
-chown -R slic3r:slic3r /home/slic3r/ /configs/ /prints/ /dev/stdout && exec gosu slic3r supervisord -e $SUPD_LOGLEVEL
+chown -R orcaslicer:orcaslicer /home/orcaslicer/ /configs/ /prints/ /dev/stdout && exec gosu orcaslicer supervisord -e $SUPD_LOGLEVEL
