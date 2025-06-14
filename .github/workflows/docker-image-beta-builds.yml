@@ -1,0 +1,24 @@
+name: Build and Publish Beta Orcaslicer Image to Docker Hub
+
+on:
+  schedule:
+    - cron: '0 0 * * 5' # Every Friday at midnight we publish an image from latest to Docker
+    
+  workflow_dispatch: # Manually build with latest changes
+
+jobs:
+  publish_images: 
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    - name: build image
+      run: docker build . --file Dockerfile-beta-orcaslicer -t simpleace/dockerized-orcaslicer:beta
+    - name: Push image to Docker Hub
+      run:
+        docker push simpleace/dockerized-orcaslicer:beta
