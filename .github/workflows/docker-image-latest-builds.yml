@@ -18,7 +18,7 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_TOKEN }}
     - name: build image
-      run: docker build . --file Dockerfile -t simpleace/dockerized-orcaslicer:latest
+      run: docker build . --file Dockerfile-latest-orcaslicer -t simpleace/dockerized-orcaslicer:latest
     - name: Push image to Docker Hub
       run:
         docker push simpleace/dockerized-orcaslicer:latest
