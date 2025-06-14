@@ -1,7 +1,7 @@
 # ORIGINAL REPO  https://github.com/damanikjosh/virtualgl-turbovnc-docker/blob/main/Dockerfile 
 ARG UBUNTU_VERSION=24.04
 
-#FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu${UBUNTU_VERSION}
+FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu${UBUNTU_VERSION}
 FROM tsapu/cudagl:12.6.3-runtime-ubuntu${UBUNTU_VERSION}
 
 LABEL authors=" - SimpleAce"
