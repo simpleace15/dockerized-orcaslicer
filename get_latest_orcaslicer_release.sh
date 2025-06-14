@@ -1,40 +1,41 @@
 #!/bin/bash
 
 TMPDIR="$(mktemp -d)"
-#curl for latest releases
-curl -SsL https://api.github.com/repos/SoftFever/OrcaSlicer/releases/latest > $TMPDIR/latest.json
 
-# Get the latest stable that contains a matching AppImage
-url=$(jq -r '.assets[] | select(.browser_download_url|test("Linux.*_AppImage_V*.*.*.AppImage$"))| .browser_download_url' $TMPDIR/latest.json)
-name=$(jq -r '.assets[] | select(.browser_download_url|test("Linux.*_AppImage_V*.*.*.AppImage$"))| .name' $TMPDIR/latest.json)
-version=$(jq -r .tag_name $TMPDIR/latest.json)
+# Fetch latest release data from GitHub API
+curl -SsL https://api.github.com/repos/SoftFever/OrcaSlicer/releases/latest > "$TMPDIR/latest.json"
 
+# Extract fields using jq with corrected regex to match AppImage
+url=$(jq -r '.assets[] | select(.browser_download_url | test("OrcaSlicer_Linux_AppImage_V[0-9]+\\.[0-9]+\\.[0-9]+\\.AppImage$")) | .browser_download_url' "$TMPDIR/latest.json")
+name=$(jq -r '.assets[] | select(.browser_download_url | test("OrcaSlicer_Linux_AppImage_V[0-9]+\\.[0-9]+\\.[0-9]+\\.AppImage$")) | .name' "$TMPDIR/latest.json")
+version=$(jq -r '.tag_name' "$TMPDIR/latest.json")
+
+# Validate input
 if [ $# -ne 1 ]; then
   echo "Wrong number of params"
+  rm -rf "$TMPDIR"
   exit 1
 else
   request=$1
 fi
 
+# Handle user request
 case $request in
-
   url)
-    echo $url
+    echo "$url"
     ;;
-
   name)
-    echo $name
+    echo "$name"
     ;;
-
   version)
-    echo $version
+    echo "$version"
     ;;
-
   *)
-    echo "Unknown request"
+    echo "Unknown request: $request"
     ;;
 esac
 
-rm -rf $TMPDIR
+# Cleanup
+rm -rf "$TMPDIR"
 
 exit 0
