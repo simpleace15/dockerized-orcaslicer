@@ -1,0 +1,16 @@
+name: Docker Image CI
+
+on:
+
+  workflow_dispatch: # Manually build with latest changes
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: ./get_latest_orcaslicer_release.sh url
