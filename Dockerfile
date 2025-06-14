@@ -107,4 +107,6 @@ RUN sed -i 's|exec $MOZ_LIBDIR/$MOZ_APP_NAME "$@"|if [ -n "$ENABLEHWGPU" ] \&\& 
 VOLUME /configs/
 VOLUME /prints/
 
+EXPOSE 3900
+
 ENTRYPOINT ["/entrypoint.sh"]
