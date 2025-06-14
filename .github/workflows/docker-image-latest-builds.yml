@@ -1,4 +1,4 @@
-name: Build and Publish Image to Docker Hub
+name: Build and Publish Latest Image to Docker Hub
 
 on:
   schedule:
