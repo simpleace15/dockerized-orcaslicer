@@ -105,6 +105,10 @@ ADD lxde-rc.xml /home/orcaslicer/.config/openbox/lxde-rc.xml
 # Set Firefox to run with hardware acceleration as if enabled.
 RUN sed -i 's|exec $MOZ_LIBDIR/$MOZ_APP_NAME "$@"|if [ -n "$ENABLEHWGPU" ] \&\& [ "$ENABLEHWGPU" = "true" ]; then\n  exec /usr/bin/vglrun $MOZ_LIBDIR/$MOZ_APP_NAME "$@"\nelse\n  exec $MOZ_LIBDIR/$MOZ_APP_NAME "$@"\nfi|g' /usr/bin/firefox-esr
 
+# Fix missing config dir and permission
+RUN mkdir -p /configs/.config/OrcaSlicer && \
+    chown -R orcaslicer:orcaslicer /configs/.config
+
 VOLUME /configs/
 VOLUME /prints/
 
