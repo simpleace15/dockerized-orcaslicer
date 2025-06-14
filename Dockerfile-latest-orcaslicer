@@ -112,6 +112,6 @@ RUN mkdir -p /configs/.config/OrcaSlicer && \
 VOLUME /configs/
 VOLUME /prints/
 
-EXPOSE 3900
+EXPOSE 8080
 
 ENTRYPOINT ["/entrypoint.sh"]
