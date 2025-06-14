@@ -47,15 +47,15 @@ RUN wget -qO /tmp/virtualgl_${VIRTUALGL_VERSION}_amd64.deb https://packagecloud.
 
 # Install Prusaslicer.
 WORKDIR /orcaslicer
-ADD get_latest_orcaslicer_release.sh /orcaslicer
+ADD get_beta_orcaslicer_release.sh /orcaslicer
 
 RUN mkdir -p /orcaslicer/orcaslicer-dist
-RUN chmod -R 777 /orcaslicer/get_latest_orcaslicer_release.sh
+RUN chmod -R 777 /orcaslicer/get_beta_orcaslicer_release.sh
 
 # Retrieve and unzip all of the OrcaSlicer bits using variable.
-RUN latestOrcaslicer=$(/orcaslicer/get_latest_orcaslicer_release.sh url) \
+RUN latestOrcaslicer=$(/orcaslicer/get_beta_orcaslicer_release.sh url) \
     && echo ${latestOrcaslicer} \
-    && OrcaslicerReleaseName=$(/orcaslicer/get_latest_orcaslicer_release.sh name) \
+    && OrcaslicerReleaseName=$(/orcaslicer/get_beta_orcaslicer_release.sh name) \
     && curl -sSL ${latestOrcaslicer} > /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
     && chmod -R 775 /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
     && dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=orcaslicer-dist/orcaslicer.AppImage \
