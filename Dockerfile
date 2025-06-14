@@ -2,7 +2,6 @@
 ARG UBUNTU_VERSION=24.04
 
 FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu${UBUNTU_VERSION}
-FROM tsapu/cudagl:12.6.3-runtime-ubuntu${UBUNTU_VERSION}
 
 LABEL authors=" - SimpleAce"
 
