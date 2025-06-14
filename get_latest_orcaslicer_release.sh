@@ -3,8 +3,8 @@
 TMPDIR="$(mktemp -d)"
 curl -SsL https://api.github.com/repos/SoftFever/OrcaSlicer/releases/latest | grep -i *Ubuntu*.AppImage > $TMPDIR/latest.json
 
-url=$(jq --raw-output '.assets[] | select(.browser_download_url|test(".*Ubuntu*.AppImage"))| .browser_download_url' $TMPDIR/latest.json)
-name=$(jq --raw-output '.assets[] | select(.browser_download_url|test(".*Ubuntu*.AppImage"))| .name' $TMPDIR/latest.json)
+url=$(jq --raw-output '.assets[] | select(.browser_download_url|test("*Ubuntu*.AppImage"))| .browser_download_url' $TMPDIR/latest.json)
+name=$(jq --raw-output '.assets[] | select(.browser_download_url|test("*Ubuntu*.AppImage"))| .name' $TMPDIR/latest.json)
 version=$(jq --raw-output '.tag_name' $TMPDIR/latest.json)
 
 if [ $# -ne 1 ]; then
