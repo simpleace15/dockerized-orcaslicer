@@ -1,9 +1,9 @@
 ---
-version: "2.1"
+version: "1.0"
 services:
-  prusaslicer-novnc:
-    image: mikeah/prusaslicer-novnc
-    container_name: prusaslicer-novnc
+  dockerized-orcaslicer:
+    image: simpleace/dockerized-orcaslicer
+    container_name: dockerized-orcaslicer
     environment:
       - SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
       - NVIDIA_VISIBLE_DEVICES=0
