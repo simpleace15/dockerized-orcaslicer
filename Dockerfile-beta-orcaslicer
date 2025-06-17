@@ -1,10 +1,3 @@
-###
-
-#Work in progress
-
-###
-
-
 # ORIGINAL REPO  https://github.com/damanikjosh/virtualgl-turbovnc-docker/blob/main/Dockerfile 
 ARG UBUNTU_VERSION=22.04
 
@@ -15,6 +8,8 @@ LABEL authors=" - SimpleAce"
 ARG VIRTUALGL_VERSION=3.1.1-20240228
 ARG TURBOVNC_VERSION=3.1.1-20240127
 ENV DEBIAN_FRONTEND noninteractive
+ENV GDK_BACKEND=x11
+ENV GTK_THEME=Adwaita:dark
 ARG PUID=1000
 ARG PGID=1000
 
@@ -27,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xdg-utils locales locales-all pcmanfm jq curl git bzip2 gpg-agent software-properties-common \
     # Packages needed to support the AppImage changes. The libnvidia-egl-gbm1 package resolves an issue 
     # where GPU acceleration resulted in blank windows being generated.
-    libwebkit2gtk-4.1-0 libnvidia-egl-gbm1 \
+    libwebkit2gtk-4.0-dev libnvidia-egl-gbm1 \
     && mkdir -p /usr/share/desktop-directories \
     # Install Firefox without Snap.
     && add-apt-repository ppa:mozillateam/ppa \
@@ -45,7 +40,7 @@ RUN wget -qO /tmp/virtualgl_${VIRTUALGL_VERSION}_amd64.deb https://packagecloud.
     && dpkg -i /tmp/turbovnc_${TURBOVNC_VERSION}_amd64.deb \
     && rm -rf /tmp/*.deb
 
-# Install Prusaslicer.
+# Install OrcaSlicer.
 WORKDIR /orcaslicer
 ADD get_beta_orcaslicer_release.sh /orcaslicer
 
@@ -112,9 +107,13 @@ ADD lxde-rc.xml /home/orcaslicer/.config/openbox/lxde-rc.xml
 # Set Firefox to run with hardware acceleration as if enabled.
 RUN sed -i 's|exec $MOZ_LIBDIR/$MOZ_APP_NAME "$@"|if [ -n "$ENABLEHWGPU" ] \&\& [ "$ENABLEHWGPU" = "true" ]; then\n  exec /usr/bin/vglrun $MOZ_LIBDIR/$MOZ_APP_NAME "$@"\nelse\n  exec $MOZ_LIBDIR/$MOZ_APP_NAME "$@"\nfi|g' /usr/bin/firefox-esr
 
+# Fix missing config dir and permission
+RUN mkdir -p /configs/.config/OrcaSlicer && \
+    chown -R orcaslicer:orcaslicer /configs/.config
+
 VOLUME /configs/
 VOLUME /prints/
 
-EXPOSE 3900
+EXPOSE 8080
 
 ENTRYPOINT ["/entrypoint.sh"]
