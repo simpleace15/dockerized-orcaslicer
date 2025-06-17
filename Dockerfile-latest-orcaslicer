@@ -40,7 +40,7 @@ RUN wget -qO /tmp/virtualgl_${VIRTUALGL_VERSION}_amd64.deb https://packagecloud.
     && dpkg -i /tmp/turbovnc_${TURBOVNC_VERSION}_amd64.deb \
     && rm -rf /tmp/*.deb
 
-# Install Prusaslicer.
+# Install OrcaSlicer.
 WORKDIR /orcaslicer
 ADD get_latest_orcaslicer_release.sh /orcaslicer
 
