@@ -117,6 +117,3 @@ VOLUME /prints/
 EXPOSE 8080
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-
-#testvscode
