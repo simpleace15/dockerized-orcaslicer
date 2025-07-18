@@ -6,7 +6,7 @@ rm -f /tmp/.X*-lock
 rm -f /tmp/.X11-unix/X*
 
 # Set defaults
-export DISPLAY=${DISPLAY:-:0}
+export DISPLAY=${DISPLAY:-:0}\nexport NOVNC_PORT=${NOVNC_PORT:-8080}\nexport VNC_PORT=${VNC_PORT:-5900}\nexport VNC_RESOLUTION=${VNC_RESOLUTION:-1280x800}\n\n# Enable GPU acceleration with noVNC\nif [ -n "$ENABLEHWGPU" ] && [ "$ENABLEHWGPU" = "true" ]; then\n  export VGLRUN="/usr/bin/vglrun"\nelse \n  export VGLRUN=\nfi
 DISPLAY_NUMBER=$(echo $DISPLAY | cut -d: -f2)
 export NOVNC_PORT=${NOVNC_PORT:-8080}
 export VNC_PORT=${VNC_PORT:-5900}
@@ -43,4 +43,4 @@ chown -R orcaslicer:orcaslicer /configs/.config
 chown -R orcaslicer:orcaslicer /home/orcaslicer/ /configs/ /prints/ /dev/stdout
 
 # Run supervisord as orcaslicer
-exec gosu orcaslicer supervisord -e "$SUPD_LOGLEVEL"
+# Run noVNC server\nexport NOVNCPASSWD=$(echo -ne "$VNC_PASSWORD" | base64)\nwebsockify --cert=/etc/novnc.pem --key=/etc/novnc.pem %(ENV_NOVNC_PORT)s localhost:%(ENV_LOCALFBPORT)s &\nexec gosu orcaslicer supervisord -e "$SUPD_LOGLEVEL"
