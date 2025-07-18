@@ -80,8 +80,8 @@ RUN echo "XDG_DOWNLOAD_DIR=\"/prints/\"" >> /home/orcaslicer/.config/user-dirs.d
 RUN echo "file:///prints prints" >> /home/orcaslicer/.gtk-bookmarks
 
 # Generate key for noVNC and cleanup errors.
-    && rm /etc/xdg/autostart/lxpolkit.desktop \
-    && mv /usr/bin/lxpolkit /usr/bin/lxpolkit.ORIG
+RUN rm /etc/xdg/autostart/lxpolkit.desktop \
+RUN mv /usr/bin/lxpolkit /usr/bin/lxpolkit.ORIG
 
 ENV PATH ${PATH}:/opt/VirtualGL/bin:/opt/TurboVNC/bin
 
