@@ -60,7 +60,9 @@ RUN latestOrcaslicer=$(/orcaslicer/get_latest_orcaslicer_release.sh url) \
 RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get autoclean
 RUN chmod -R 777 /orcaslicer/
-RUN groupadd -g ${PGID} orcaslicer
+if ! getent group orcaslicer &>/dev/null; then
+  RUN groupadd -g ${PGID} orcaslicer
+fi
 RUN useradd -u ${PUID} -g orcaslicer --create-home --home-dir /home/orcaslicer orcaslicer
 RUN mkdir -p /orcaslicer/
 RUN mkdir -p /configs/
