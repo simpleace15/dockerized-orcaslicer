@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # where GPU acceleration resulted in blank windows being generated.
     libwebkit2gtk-4.1-dev libnvidia-egl-gbm1 \
     #Added since called out as missing.
-    libspnav \
+    libspnav0 \
 
     && mkdir -p /usr/share/desktop-directories \
     # Install Firefox without Snap.
