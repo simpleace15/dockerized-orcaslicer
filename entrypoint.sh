@@ -8,6 +8,13 @@ rm -f /tmp/.X11-unix/X*
 # Set defaults
 export DISPLAY=${DISPLAY:-:0}
 
+# Enable GPU acceleration with noVNC
+if [ -n "$ENABLEHWGPU" ] && [ "$ENABLEHWGPU" = "true" ]; then
+  export VGLRUN="/usr/bin/vglrun"
+else 
+  export VGLRUN=
+fi
+
 # Set VNC password if given
 if [ -n "$VNC_PASSWORD" ]; then
   mkdir -p /root/.vnc
