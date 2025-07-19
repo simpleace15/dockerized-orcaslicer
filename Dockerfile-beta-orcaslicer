@@ -1,29 +1,28 @@
-###
-
-#Work in progress
-
-###
-
-
+# ORIGINAL REPO  https://github.com/damanikjosh/virtualgl-turbovnc-docker/blob/main/Dockerfile 
 ARG UBUNTU_VERSION=22.04
 
 FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu${UBUNTU_VERSION}
 
 LABEL authors=" - SimpleAce"
 
+ARG VIRTUALGL_VERSION=3.1.1-20240228
+ARG TURBOVNC_VERSION=3.1.1-20240127
 ENV DEBIAN_FRONTEND noninteractive
+ENV GDK_BACKEND=x11
+ENV GTK_THEME=Adwaita:dark
 ARG PUID=1000
 ARG PGID=1000
 
 # Install some basic dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget xorg xauth gosu supervisor x11-xserver-utils libegl1-mesa libgl1-mesa-glx \
+    locales-all libpam0g libxt6 libxext6 dbus-x11 xauth x11-xkb-utils xkb-data python3 xterm novnc \
     lxde gtk2-engines-murrine gnome-themes-standard gtk2-engines-pixbuf gtk2-engines-murrine arc-theme \
     freeglut3 libgtk2.0-dev libwxgtk3.0-gtk3-dev libwx-perl libxmu-dev libgl1-mesa-glx libgl1-mesa-dri  \
     xdg-utils locales locales-all pcmanfm jq curl git bzip2 gpg-agent software-properties-common \
     # Packages needed to support the AppImage changes. The libnvidia-egl-gbm1 package resolves an issue 
     # where GPU acceleration resulted in blank windows being generated.
-    libwebkit2gtk-4.1-0 libnvidia-egl-gbm1 \
+    libwebkit2gtk-4.0-dev libnvidia-egl-gbm1 \
     && mkdir -p /usr/share/desktop-directories \
     # Install Firefox without Snap.
     && add-apt-repository ppa:mozillateam/ppa \
@@ -34,25 +33,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
-# Install VirtualGL and noVNC
-RUN curl -fsSL https://sourceforge.net/projects/virtualgl/files/2.6.2/VirtualGL_2.6.2_Linux_x86_64.tar.gz/download -o VirtualGL_2.6.2_Linux_x86_64.tar.gz \
-    && tar xzf VirtualGL_2.6.2_Linux_x86_64.tar.gz \
-    && cd virtualgl_2.6.2 \
-    && ./virtualgl_run install \
-    && cd .. \
-    && apt-get update && apt-get install -y --no-install-recommends novnc websockify
+# Install VirtualGL and TurboVNC
 
-# Install Prusaslicer.
+# Install VirtualGL
+RUN wget -qO /tmp/virtualgl_${VIRTUALGL_VERSION}_amd64.deb https://packagecloud.io/dcommander/virtualgl/packages/any/any/virtualgl_${VIRTUALGL_VERSION}_amd64.deb/download.deb?distro_version_id=35\
+    && dpkg -i /tmp/virtualgl_${VIRTUALGL_VERSION}_amd64.deb \
+    && rm -rf /tmp/*.deb
+
+# Install OrcaSlicer.
 WORKDIR /orcaslicer
-ADD get_beta_orcaslicer_release.sh /orcaslicer
+ADD get_latest_orcaslicer_release.sh /orcaslicer
 
 RUN mkdir -p /orcaslicer/orcaslicer-dist
-RUN chmod -R 777 /orcaslicer/get_beta_orcaslicer_release.sh
+RUN chmod -R 777 /orcaslicer/get_latest_orcaslicer_release.sh
 
 # Retrieve and unzip all of the OrcaSlicer bits using variable.
-RUN latestOrcaslicer=$(/orcaslicer/get_beta_orcaslicer_release.sh url) \
+RUN latestOrcaslicer=$(/orcaslicer/get_latest_orcaslicer_release.sh url) \
     && echo ${latestOrcaslicer} \
-    && OrcaslicerReleaseName=$(/orcaslicer/get_beta_orcaslicer_release.sh name) \
+    && OrcaslicerReleaseName=$(/orcaslicer/get_latest_orcaslicer_release.sh name) \
     && curl -sSL ${latestOrcaslicer} > /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
     && chmod -R 775 /orcaslicer/orcaslicer-dist/orcaslicer.AppImage \
     && dd if=/dev/zero bs=1 count=3 seek=8 conv=notrunc of=orcaslicer-dist/orcaslicer.AppImage \
@@ -80,8 +78,9 @@ RUN echo "XDG_DOWNLOAD_DIR=\"/prints/\"" >> /home/orcaslicer/.config/user-dirs.d
 RUN echo "file:///prints prints" >> /home/orcaslicer/.gtk-bookmarks
 
 # Generate key for noVNC and cleanup errors.
-RUN rm /etc/xdg/autostart/lxpolkit.desktop \
-RUN mv /usr/bin/lxpolkit /usr/bin/lxpolkit.ORIG
+RUN openssl req -x509 -nodes -newkey rsa:2048 -keyout /etc/novnc.pem -out /etc/novnc.pem -days 365 -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=localhost" \
+    && rm /etc/xdg/autostart/lxpolkit.desktop \
+    && mv /usr/bin/lxpolkit /usr/bin/lxpolkit.ORIG
 
 ENV PATH ${PATH}:/opt/VirtualGL/bin:/opt/TurboVNC/bin
 
@@ -89,14 +88,32 @@ ADD entrypoint.sh /entrypoint.sh
 ADD supervisord.conf /etc/
 
 # Add a default file to resize and redirect, and adjust icons for noVNC.
+ADD vncresize.html /usr/share/novnc/index.html
+ADD icons/prusaslicer-16x16.png /usr/share/novnc/app/images/icons/novnc-16x16.png
+ADD icons/prusaslicer-24x24.png /usr/share/novnc/app/images/icons/novnc-24x24.png
+ADD icons/prusaslicer-32x32.png /usr/share/novnc/app/images/icons/novnc-32x32.png
+ADD icons/prusaslicer-48x48.png /usr/share/novnc/app/images/icons/novnc-48x48.png
+ADD icons/prusaslicer-60x60.png /usr/share/novnc/app/images/icons/novnc-60x60.png
+ADD icons/prusaslicer-64x64.png /usr/share/novnc/app/images/icons/novnc-64x64.png
+ADD icons/prusaslicer-72x72.png /usr/share/novnc/app/images/icons/novnc-72x72.png
+ADD icons/prusaslicer-76x76.png /usr/share/novnc/app/images/icons/novnc-76x76.png
+ADD icons/prusaslicer-96x96.png /usr/share/novnc/app/images/icons/novnc-96x96.png
+ADD icons/prusaslicer-120x120.png /usr/share/novnc/app/images/icons/novnc-120x120.png
+ADD icons/prusaslicer-144x144.png /usr/share/novnc/app/images/icons/novnc-144x144.png
+ADD icons/prusaslicer-152x152.png /usr/share/novnc/app/images/icons/novnc-152x152.png
+ADD icons/prusaslicer-192x192.png /usr/share/novnc/app/images/icons/novnc-192x192.png
 ADD lxde-rc.xml /home/orcaslicer/.config/openbox/lxde-rc.xml 
 
 # Set Firefox to run with hardware acceleration as if enabled.
 RUN sed -i 's|exec $MOZ_LIBDIR/$MOZ_APP_NAME "$@"|if [ -n "$ENABLEHWGPU" ] \&\& [ "$ENABLEHWGPU" = "true" ]; then\n  exec /usr/bin/vglrun $MOZ_LIBDIR/$MOZ_APP_NAME "$@"\nelse\n  exec $MOZ_LIBDIR/$MOZ_APP_NAME "$@"\nfi|g' /usr/bin/firefox-esr
 
+# Fix missing config dir and permission
+RUN mkdir -p /configs/.config/OrcaSlicer && \
+    chown -R orcaslicer:orcaslicer /configs/.config
+
 VOLUME /configs/
 VOLUME /prints/
 
-EXPOSE 3900
+EXPOSE 8080
 
 ENTRYPOINT ["/entrypoint.sh"]
